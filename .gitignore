@@ -1,0 +1,5 @@
+.idea
+out
+GameInfo
+_playedGameList_.txt
+*.iml
