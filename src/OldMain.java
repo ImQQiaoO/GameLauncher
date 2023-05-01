@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,7 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.List;
 
-public class Main {
+public class OldMain {
 
     static Process process;
     static long totalPlayTime = 0;
