@@ -3,3 +3,4 @@ out
 GameInfo
 _playedGameList_.txt
 *.iml
+src/OldMain.java
