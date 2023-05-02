@@ -1,12 +1,13 @@
 import javax.swing.*;
-import javax.swing.JLabel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,6 +23,17 @@ public class DefaultPage extends JPanel {
 
     public DefaultPage() {
         this.setFocusable(true);
+
+        String filePath = "_playedGameList_.txt";
+        File file = new File(filePath);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                System.out.println("Created A New File");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void showFirstPage() {
@@ -85,24 +97,18 @@ public class DefaultPage extends JPanel {
     private void showGameList() {
         Vector<Object> content = new Vector<>();
         JList<Object> gameList = new JList<>(content);
-        String basePath = ".\\GameInfo";
-        String[] list;
-        list = new File(basePath).list();
+        ArrayList<String[]> dataList = gameDataReader();
         String contentName;
         String contentTime;
         HashMap<String, Double> playTimeMap = new HashMap<>();
-        for (int i = 0; i < Objects.requireNonNull(list).length; i++) {
-            contentName = list[i].substring(0, list[i].indexOf("."));
-            try {
-                contentTime = new String(Files.readAllBytes(Paths.get(".\\GameInfo\\" + list[i])));
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+        for (String[] strings : dataList) {
+            contentName = strings[0].substring(strings[0].lastIndexOf("\\") + 1, strings[0].indexOf(".exe"));
+            contentTime = strings[1];
             playTimeMap.put(contentName, Double.parseDouble(contentTime));
         }
         List<Map.Entry<String, Double>> newTimeMapList = new ArrayList<>(playTimeMap.entrySet());
         newTimeMapList.sort((o1, o2) -> (o2.getValue().compareTo(o1.getValue())));
-        for (int i = 0; i < Objects.requireNonNull(list).length; i++) {
+        for (int i = 0; i < dataList.size(); i++) {
             content.add("<html><table width='250'><tr><td align='left'>" + newTimeMapList.get(i).getKey() + "</td>" +
                     "<td align='right'>" +
                     new Formatter().format("%.2f", Double.parseDouble(String.valueOf(newTimeMapList.get(i).getValue())) / 60000 / 60) +
@@ -113,6 +119,24 @@ public class DefaultPage extends JPanel {
         JScrollPane scrollPane = new JScrollPane(gameList);
         scrollPane.setBounds(10, 38, 300, 400);
         this.add(scrollPane);
+    }
+
+    private static ArrayList<String[]> gameDataReader() {
+        String filePath = "_playedGameList_.txt";
+        String[] data;
+        ArrayList<String[]> dataList = new ArrayList<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                data = line.split("=");
+                dataList.add(data);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dataList;
     }
 
     public static class GameListRenderer extends DefaultListCellRenderer {
