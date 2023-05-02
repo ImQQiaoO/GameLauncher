@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.JLabel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,8 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static java.awt.Color.black;
 
@@ -91,7 +92,7 @@ public class DefaultPage extends JPanel {
         String contentTime;
         HashMap<String, Double> playTimeMap = new HashMap<>();
         for (int i = 0; i < Objects.requireNonNull(list).length; i++) {
-            contentName = list[i].substring(0,list[i].lastIndexOf("."));
+            contentName = list[i].substring(0, list[i].indexOf("."));
             try {
                 contentTime = new String(Files.readAllBytes(Paths.get(".\\GameInfo\\" + list[i])));
             } catch (IOException ex) {
@@ -102,8 +103,10 @@ public class DefaultPage extends JPanel {
         List<Map.Entry<String, Double>> newTimeMapList = new ArrayList<>(playTimeMap.entrySet());
         newTimeMapList.sort((o1, o2) -> (o2.getValue().compareTo(o1.getValue())));
         for (int i = 0; i < Objects.requireNonNull(list).length; i++) {
-            content.add(newTimeMapList.get(i).getKey() + "    -    " + new Formatter().format("%.2f", Double.parseDouble
-                    (String.valueOf(newTimeMapList.get(i).getValue()))/60000/60) + " hours");
+            content.add("<html><table width='250'><tr><td align='left'>" + newTimeMapList.get(i).getKey() + "</td>" +
+                    "<td align='right'>" +
+                    new Formatter().format("%.2f", Double.parseDouble(String.valueOf(newTimeMapList.get(i).getValue())) / 60000 / 60) +
+                    " hours" + "</td></tr></table></html>");
         }
         gameList.setBounds(10, 10, 200, 200);
         gameList.setCellRenderer(new GameListRenderer());
@@ -116,14 +119,28 @@ public class DefaultPage extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            label.setOpaque(true); // 设置标签为不透明
+            label.setOpaque(true); //
             if (isSelected) {
-                label.setBackground(new Color(149, 184, 197)); // 设置选中项背景颜色
-                label.setForeground(new Color(57, 65, 79)); // 设置选中项前景颜色
+                label.setBackground(new Color(27, 80, 104)); //  new Color(149, 184, 197)
+                label.setForeground(Color.WHITE);
             } else {
-                label.setBackground(new Color(121, 156, 173, 179)); // 设置非选中项背景颜色
-                label.setForeground(new Color(46, 61, 72)); // 设置非选中项前景颜色
+                label.setBackground(new Color(121, 156, 173, 179));
+                label.setForeground(new Color(46, 61, 72));
             }
+
+            label.setVerticalAlignment(SwingConstants.TOP); // 设置垂直对齐方式为上部对齐
+            label.setHorizontalTextPosition(SwingConstants.LEFT); // 设置水平文本位置为左侧
+            label.setHorizontalAlignment(SwingConstants.LEFT); // 设置水平对齐方式为左对齐
+            label.setPreferredSize(new Dimension(200, label.getPreferredSize().height)); // 固定JLabel的宽度为300，高度不变
+            label.setMaximumSize(new Dimension(500, Short.MAX_VALUE)); // 设置JLabel的最大高度为整个单元格的高度
+
+            int leftPadding = 30;//左边距为10个像素
+            int rightPadding = -10;//右边距为10个像素
+            int topPadding = 0;
+            int bottomPadding = 0;
+            label.setBorder(BorderFactory.createCompoundBorder(label.getBorder(),
+                    BorderFactory.createEmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding)));
+            label.setText(value.toString());
             return label;
         }
     }
