@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,15 +10,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Formatter;
+import java.util.Vector;
 
 import static java.awt.Color.black;
 
 public class DefaultPage extends JPanel {
 
     ArrayList<GameData> dataList;
-//    List<Map.Entry<String, Double>> newTimeMapList;
+    //    List<Map.Entry<String, Double>> newTimeMapList;
     boolean isChose = false;
     String selectedGame = "";
 
@@ -92,19 +95,6 @@ public class DefaultPage extends JPanel {
 
             }
         });
-
-//        JButton showListButton = new JButton("Show My Game Time List");
-//        this.add(showListButton);
-//        showListButton.setBackground(new Color(27, 80, 104));
-//        showListButton.setForeground(Color.WHITE);
-//        showListButton.setFocusPainted(false);
-//        showListButton.setBounds(94, 260, 306, 50);
-//        showListButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//            }
-//        });
         setLayout(null);
     }
 
@@ -124,6 +114,46 @@ public class DefaultPage extends JPanel {
         gameList.setCellRenderer(new GameListRenderer());
         JScrollPane scrollPane = new JScrollPane(gameList);
         scrollPane.setBounds(10, 38, 300, 400);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            private final Dimension d = new Dimension();
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return new JButton() {
+                    @Override
+                    public Dimension getPreferredSize() {
+                        return d;
+                    }
+                };
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return new JButton() {
+                    @Override
+                    public Dimension getPreferredSize() {
+                        return d;
+                    }
+                };
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
+                g.setColor(new Color(121, 156, 173, 179));
+                g.fillRect(r.x, r.y, r.width, r.height);
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, c);
+                g2.setColor(new Color(27, 80, 104));
+                g2.fillRoundRect(r.x + 5, r.y, r.width - 10, r.height, 5, 5);
+                g2.dispose();
+            }
+        });
         this.add(scrollPane);
     }
 
@@ -160,7 +190,7 @@ public class DefaultPage extends JPanel {
             }
             for (Integer integer : deleteIndex) {
                 if (index == integer) {
-                    label.setForeground(Color.RED);
+                    label.setForeground(new Color(129, 138, 138));
                 }
             }
             label.setText(value.toString());
