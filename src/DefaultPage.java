@@ -9,8 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 
@@ -18,6 +16,8 @@ import static java.awt.Color.black;
 
 public class DefaultPage extends JPanel {
 
+    ArrayList<GameData> dataList;
+//    List<Map.Entry<String, Double>> newTimeMapList;
     boolean isChose = false;
     String selectedGame = "";
 
@@ -33,6 +33,20 @@ public class DefaultPage extends JPanel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        String[] data;
+        dataList = new ArrayList<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                data = line.split("=");
+                dataList.add(new GameData(data[0], Integer.parseInt(data[1]), data[2].charAt(0)));
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -97,21 +111,13 @@ public class DefaultPage extends JPanel {
     private void showGameList() {
         Vector<Object> content = new Vector<>();
         JList<Object> gameList = new JList<>(content);
-        ArrayList<String[]> dataList = gameDataReader();
-        String contentName;
-        String contentTime;
-        HashMap<String, Double> playTimeMap = new HashMap<>();
-        for (String[] strings : dataList) {
-            contentName = strings[0].substring(strings[0].lastIndexOf("\\") + 1, strings[0].indexOf(".exe"));
-            contentTime = strings[1];
-            playTimeMap.put(contentName, Double.parseDouble(contentTime));
-        }
-        List<Map.Entry<String, Double>> newTimeMapList = new ArrayList<>(playTimeMap.entrySet());
-        newTimeMapList.sort((o1, o2) -> (o2.getValue().compareTo(o1.getValue())));
-        for (int i = 0; i < dataList.size(); i++) {
-            content.add("<html><table width='250'><tr><td align='left'>" + newTimeMapList.get(i).getKey() + "</td>" +
+        Comparator<GameData> gameDataComparator = (o1, o2) -> Integer.compare(o2.getPlayTime(), o1.getPlayTime());
+        dataList.sort(gameDataComparator);
+        for (GameData gameData : dataList) {
+            String gameName = gameData.getGamePosition().substring(gameData.getGamePosition().lastIndexOf("\\") + 1, gameData.getGamePosition().indexOf(".exe"));
+            content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
                     "<td align='right'>" +
-                    new Formatter().format("%.2f", Double.parseDouble(String.valueOf(newTimeMapList.get(i).getValue())) / 60000 / 60) +
+                    new Formatter().format("%.2f", Double.parseDouble(String.valueOf(gameData.getPlayTime())) / 60000 / 60) +
                     " hours" + "</td></tr></table></html>");
         }
         gameList.setBounds(10, 10, 200, 200);
@@ -121,29 +127,12 @@ public class DefaultPage extends JPanel {
         this.add(scrollPane);
     }
 
-    private static ArrayList<String[]> gameDataReader() {
-        String filePath = "_playedGameList_.txt";
-        String[] data;
-        ArrayList<String[]> dataList = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                data = line.split("=");
-                dataList.add(data);
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return dataList;
-    }
 
-    public static class GameListRenderer extends DefaultListCellRenderer {
+    public class GameListRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            label.setOpaque(true); //
+            label.setOpaque(true);
             if (isSelected) {
                 label.setBackground(new Color(27, 80, 104)); //  new Color(149, 184, 197)
                 label.setForeground(Color.WHITE);
@@ -151,7 +140,6 @@ public class DefaultPage extends JPanel {
                 label.setBackground(new Color(121, 156, 173, 179));
                 label.setForeground(new Color(46, 61, 72));
             }
-
             label.setVerticalAlignment(SwingConstants.TOP); // 设置垂直对齐方式为上部对齐
             label.setHorizontalTextPosition(SwingConstants.LEFT); // 设置水平文本位置为左侧
             label.setHorizontalAlignment(SwingConstants.LEFT); // 设置水平对齐方式为左对齐
@@ -164,6 +152,17 @@ public class DefaultPage extends JPanel {
             int bottomPadding = 0;
             label.setBorder(BorderFactory.createCompoundBorder(label.getBorder(),
                     BorderFactory.createEmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding)));
+            ArrayList<Integer> deleteIndex = new ArrayList<>();
+            for (int i = 0; i < dataList.size(); i++) {
+                if (dataList.get(i).getStatus() == '0') {
+                    deleteIndex.add(i);
+                }
+            }
+            for (Integer integer : deleteIndex) {
+                if (index == integer) {
+                    label.setForeground(Color.RED);
+                }
+            }
             label.setText(value.toString());
             return label;
         }
