@@ -23,6 +23,7 @@ public class DefaultPage extends JPanel {
     static ArrayList<GameData> dataList;
     static Vector<Object> content;
     static JList<Object> gameList;
+    static ArrayList<Icon> iconList;
     //    List<Map.Entry<String, Double>> newTimeMapList;
     boolean isChose = false;
     String selectedGame = "";
@@ -111,7 +112,7 @@ public class DefaultPage extends JPanel {
         gameList = new JList<>(content);
         Comparator<GameData> gameDataComparator = (o1, o2) -> Integer.compare(o2.getPlayTime(), o1.getPlayTime());
         dataList.sort(gameDataComparator);
-        ArrayList<Icon> iconList = new ArrayList<>();
+        iconList = new ArrayList<>();
         for (GameData gameData : dataList) {
             iconList.add(FileSystemView.getFileSystemView().getSystemIcon(new File(gameData.getGamePosition())));
         }
@@ -123,7 +124,7 @@ public class DefaultPage extends JPanel {
                     " hours" + "</td></tr></table></html>");
         }
         gameList.setBounds(10, 10, 200, 200);
-        gameList.setCellRenderer(new GameListRenderer(iconList));
+        gameList.setCellRenderer(new GameListRenderer());//iconList
         JScrollPane scrollPane = new JScrollPane(gameList);
         scrollPane.setBounds(10, 38, 300, 400);
         scrollPane.getViewport().setOpaque(false);
@@ -178,10 +179,10 @@ public class DefaultPage extends JPanel {
 
 
     public static class GameListRenderer extends DefaultListCellRenderer {
-        private final ArrayList<Icon> iconList;
-        public GameListRenderer(ArrayList<Icon> iconList) {
-            this.iconList = iconList;
-        }
+//        private final ArrayList<Icon> iconList;
+//        public GameListRenderer(ArrayList<Icon> iconList) {
+//            this.iconList = iconList;
+//        }
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

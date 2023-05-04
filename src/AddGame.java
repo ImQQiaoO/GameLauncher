@@ -1,9 +1,7 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Comparator;
 import java.util.Formatter;
 
@@ -31,8 +29,8 @@ public class AddGame {
                 "<td align='right'>" +
                 new Formatter().format("%.2f", Double.parseDouble("0"))
                 + " hours </td></tr></table></html>");
+        DefaultPage.iconList.add(FileSystemView.getFileSystemView().getSystemIcon(new File(chosenFilePath)));
         DefaultPage.gameList.updateUI();
-
     }
 
     public static String fileChooser() {
