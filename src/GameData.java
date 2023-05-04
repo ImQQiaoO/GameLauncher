@@ -37,6 +37,6 @@ public class GameData {
     }
 
     public String toString() {
-        return "GameData{gameName = " + gamePosition + ", playTime = " + playTime + ", status = " + status + "}";
+        return "GameData{gamePosition = " + gamePosition + ", playTime = " + playTime + ", status = " + status + "}";
     }
 }

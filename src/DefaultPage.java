@@ -19,15 +19,17 @@ import static java.awt.Color.black;
 
 public class DefaultPage extends JPanel {
 
-    ArrayList<GameData> dataList;
+    static ArrayList<GameData> dataList;
+    static Vector<Object> content;
+    static JList<Object> gameList;
     //    List<Map.Entry<String, Double>> newTimeMapList;
     boolean isChose = false;
     String selectedGame = "";
+    static final String filePath = "_playedGameList_.txt";
 
     public DefaultPage() {
         this.setFocusable(true);
 
-        String filePath = "_playedGameList_.txt";
         File file = new File(filePath);
         if (!file.exists()) {
             try {
@@ -37,7 +39,10 @@ public class DefaultPage extends JPanel {
                 e.printStackTrace();
             }
         }
+        gameDataReader();
+    }
 
+    public static void gameDataReader() {
         String[] data;
         dataList = new ArrayList<>();
         try {
@@ -79,7 +84,12 @@ public class DefaultPage extends JPanel {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                AddGame addGame = new AddGame();
+                try {
+                    addGame.addNewGame();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -98,9 +108,9 @@ public class DefaultPage extends JPanel {
         setLayout(null);
     }
 
-    private void showGameList() {
-        Vector<Object> content = new Vector<>();
-        JList<Object> gameList = new JList<>(content);
+    public void showGameList() {
+        content = new Vector<>();
+        gameList = new JList<>(content);
         Comparator<GameData> gameDataComparator = (o1, o2) -> Integer.compare(o2.getPlayTime(), o1.getPlayTime());
         dataList.sort(gameDataComparator);
         for (GameData gameData : dataList) {
@@ -152,6 +162,13 @@ public class DefaultPage extends JPanel {
                 g2.setColor(new Color(27, 80, 104));
                 g2.fillRoundRect(r.x + 5, r.y, r.width - 10, r.height, 5, 5);
                 g2.dispose();
+            }
+        });
+        gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        gameList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) { // 确保只在最后一次选择事件之后调用
+                int selectedIndex = gameList.getSelectedIndex();
+                System.out.println(dataList.get(selectedIndex));    // 输出选中的选项
             }
         });
         this.add(scrollPane);
@@ -233,7 +250,7 @@ public class DefaultPage extends JPanel {
         changeBackgroundColor(g, new Color(182, 206, 202));
         clearBackground(g, 880, 550);
         changeColor(g, new Color(27, 80, 104));
-        drawText(g, 10, 30, "Your Game List:", 25);
+        drawText(g, 10, 30, "My Game List:", 25);
         drawLine(g, 330, 0, 330, 550);
         drawLine(g, 330, 220, 880, 220);
         drawText(g, 75, 482, "Add A New Game", 15);
