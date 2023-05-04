@@ -32,6 +32,7 @@ public class AddGame {
                 new Formatter().format("%.2f", Double.parseDouble("0"))
                 + " hours </td></tr></table></html>");
         DefaultPage.gameList.updateUI();
+
     }
 
     public static String fileChooser() {

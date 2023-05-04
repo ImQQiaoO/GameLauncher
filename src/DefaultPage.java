@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -81,15 +82,12 @@ public class DefaultPage extends JPanel {
         addButton.setForeground(Color.WHITE);
         addButton.setFocusPainted(false);
         addButton.setBounds(10, 450, 50, 50);
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AddGame addGame = new AddGame();
-                try {
-                    addGame.addNewGame();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+        addButton.addActionListener(e -> {
+            AddGame addGame = new AddGame();
+            try {
+                addGame.addNewGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
 
@@ -99,7 +97,7 @@ public class DefaultPage extends JPanel {
         startButton.setForeground(Color.WHITE);
         startButton.setFocusPainted(false);
         startButton.setBounds(750, 230, 100, 50);
-        startButton.addActionListener(new ActionListener() {
+        startButton.addActionListener(new ActionListener() {    //TODO: Add start button function.
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -113,6 +111,10 @@ public class DefaultPage extends JPanel {
         gameList = new JList<>(content);
         Comparator<GameData> gameDataComparator = (o1, o2) -> Integer.compare(o2.getPlayTime(), o1.getPlayTime());
         dataList.sort(gameDataComparator);
+        ArrayList<Icon> iconList = new ArrayList<>();
+        for (GameData gameData : dataList) {
+            iconList.add(FileSystemView.getFileSystemView().getSystemIcon(new File(gameData.getGamePosition())));
+        }
         for (GameData gameData : dataList) {
             String gameName = gameData.getGamePosition().substring(gameData.getGamePosition().lastIndexOf("\\") + 1, gameData.getGamePosition().indexOf(".exe"));
             content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
@@ -121,7 +123,7 @@ public class DefaultPage extends JPanel {
                     " hours" + "</td></tr></table></html>");
         }
         gameList.setBounds(10, 10, 200, 200);
-        gameList.setCellRenderer(new GameListRenderer());
+        gameList.setCellRenderer(new GameListRenderer(iconList));
         JScrollPane scrollPane = new JScrollPane(gameList);
         scrollPane.setBounds(10, 38, 300, 400);
         scrollPane.getViewport().setOpaque(false);
@@ -175,11 +177,21 @@ public class DefaultPage extends JPanel {
     }
 
 
-    public class GameListRenderer extends DefaultListCellRenderer {
+    public static class GameListRenderer extends DefaultListCellRenderer {
+        private final ArrayList<Icon> iconList;
+        public GameListRenderer(ArrayList<Icon> iconList) {
+            this.iconList = iconList;
+        }
+
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             label.setOpaque(true);
+            if (index >= 0 && index < iconList.size()) { // 根据索引设置图标
+                label.setIcon(iconList.get(index));
+            } else {
+                label.setIcon(null);
+            }
             if (isSelected) {
                 label.setBackground(new Color(27, 80, 104)); //  new Color(149, 184, 197)
                 label.setForeground(Color.WHITE);
@@ -192,13 +204,24 @@ public class DefaultPage extends JPanel {
             label.setHorizontalAlignment(SwingConstants.LEFT); // 设置水平对齐方式为左对齐
             label.setPreferredSize(new Dimension(200, label.getPreferredSize().height)); // 固定JLabel的宽度为300，高度不变
             label.setMaximumSize(new Dimension(500, Short.MAX_VALUE)); // 设置JLabel的最大高度为整个单元格的高度
+            label.setHorizontalTextPosition(SwingConstants.RIGHT); // 将文本设置为右对齐
+            label.setIconTextGap(3); // 设置图标和文本之间的间距为3像素
 
-            int leftPadding = 30;//左边距为10个像素
+            int leftPadding = 10;//左边距为10个像素
             int rightPadding = -10;//右边距为10个像素
             int topPadding = 0;
             int bottomPadding = 0;
-            label.setBorder(BorderFactory.createCompoundBorder(label.getBorder(),
-                    BorderFactory.createEmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding)));
+
+            if (label.getIcon() != null) {
+                label.setHorizontalTextPosition(SwingConstants.RIGHT); // 图标在左侧，文本在右侧
+                label.setIconTextGap(3); // 设置图标和文本之间的间距为3像素
+                label.setBorder(BorderFactory.createCompoundBorder(label.getBorder(),
+                        BorderFactory.createEmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding)));
+            } else {
+                label.setHorizontalTextPosition(SwingConstants.LEFT); // 没有图标时，文本居中
+                label.setBorder(BorderFactory.createCompoundBorder(label.getBorder(),
+                        BorderFactory.createEmptyBorder(topPadding, 29, bottomPadding, rightPadding)));
+            }
             ArrayList<Integer> deleteIndex = new ArrayList<>();
             for (int i = 0; i < dataList.size(); i++) {
                 if (dataList.get(i).getStatus() == '0') {
