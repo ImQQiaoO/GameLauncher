@@ -16,12 +16,12 @@ public class AddGame {
                     , JOptionPane.ERROR_MESSAGE);
             addNewGame();
             return;
-        }
+        }   // TODO: Judge if the file is already in the list.
         BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath, true));
-        writer.write(chosenFilePath + "=0=1\n");
+        writer.write(DefaultPage.dataList.size() + "=" + chosenFilePath + "=0=1\n");
         writer.close();
         DefaultPage.gameDataReader();
-        Comparator<GameData> gameDataComparator = (o1, o2) -> Integer.compare(o2.getPlayTime(), o1.getPlayTime());
+        Comparator<GameData> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());
         DefaultPage.dataList.sort(gameDataComparator);
         String gameName = chosenFilePath.substring(chosenFilePath.lastIndexOf("\\") + 1,
                 chosenFilePath.indexOf(".exe"));

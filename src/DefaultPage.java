@@ -2,8 +2,6 @@ import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -20,13 +18,14 @@ import static java.awt.Color.black;
 
 public class DefaultPage extends JPanel {
 
-    static ArrayList<GameData> dataList;
+    static ArrayList<GameData> dataList; //The data in this ArrayList is sequential
     static Vector<Object> content;
     static JList<Object> gameList;
     static ArrayList<Icon> iconList;
-    //    List<Map.Entry<String, Double>> newTimeMapList;
-    boolean isChose = false;
+    Process process;
+    int selectedIndex;
     String selectedGame = "";
+    boolean isChose = false;
     static final String filePath = "_playedGameList_.txt";
 
     public DefaultPage() {
@@ -52,7 +51,7 @@ public class DefaultPage extends JPanel {
             String line;
             while ((line = reader.readLine()) != null) {
                 data = line.split("=");
-                dataList.add(new GameData(data[0], Integer.parseInt(data[1]), data[2].charAt(0)));
+                dataList.add(new GameData(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3].charAt(0)));
             }
             reader.close();
         } catch (IOException e) {
@@ -98,10 +97,12 @@ public class DefaultPage extends JPanel {
         startButton.setForeground(Color.WHITE);
         startButton.setFocusPainted(false);
         startButton.setBounds(750, 230, 100, 50);
-        startButton.addActionListener(new ActionListener() {    //TODO: Add start button function.
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
+        startButton.addActionListener(e -> {    //Add start button function.
+            ExecuteProcess executeProcess = new ExecuteProcess(selectedIndex, process);
+            try {
+                executeProcess.runProcess();
+            } catch (IOException | InterruptedException ex) {
+                throw new RuntimeException(ex);
             }
         });
         setLayout(null);
@@ -110,7 +111,7 @@ public class DefaultPage extends JPanel {
     public void showGameList() {
         content = new Vector<>();
         gameList = new JList<>(content);
-        Comparator<GameData> gameDataComparator = (o1, o2) -> Integer.compare(o2.getPlayTime(), o1.getPlayTime());
+        Comparator<GameData> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());
         dataList.sort(gameDataComparator);
         iconList = new ArrayList<>();
         for (GameData gameData : dataList) {
@@ -124,7 +125,7 @@ public class DefaultPage extends JPanel {
                     " hours" + "</td></tr></table></html>");
         }
         gameList.setBounds(10, 10, 200, 200);
-        gameList.setCellRenderer(new GameListRenderer());//iconList
+        gameList.setCellRenderer(new GameListRenderer());
         JScrollPane scrollPane = new JScrollPane(gameList);
         scrollPane.setBounds(10, 38, 300, 400);
         scrollPane.getViewport().setOpaque(false);
@@ -170,20 +171,18 @@ public class DefaultPage extends JPanel {
         gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         gameList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) { // 确保只在最后一次选择事件之后调用
-                int selectedIndex = gameList.getSelectedIndex();
-                System.out.println(dataList.get(selectedIndex));    // 输出选中的选项
+                selectedIndex = gameList.getSelectedIndex();
+                selectedGame = dataList.get(selectedIndex).getGamePosition().
+                        substring(dataList.get(selectedIndex).getGamePosition().lastIndexOf("\\") + 1,
+                                dataList.get(selectedIndex).getGamePosition().indexOf(".exe"));
+                System.out.println(dataList.get(selectedIndex)); // 输出选中的选项
+                System.out.println(selectedIndex);
             }
         });
         this.add(scrollPane);
     }
 
-
     public static class GameListRenderer extends DefaultListCellRenderer {
-//        private final ArrayList<Icon> iconList;
-//        public GameListRenderer(ArrayList<Icon> iconList) {
-//            this.iconList = iconList;
-//        }
-
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -280,7 +279,7 @@ public class DefaultPage extends JPanel {
         drawText(g, 75, 482, "Add A New Game", 15);
         changeColor(g, black);
         changeColor(g, new Color(27, 80, 104));
-        drawText(g, 210, 120, selectedGame, 15);
+//        drawText(g, 210, 120, selectedGame, 15);
     }
 
     void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
@@ -307,5 +306,4 @@ public class DefaultPage extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.fill(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
     }
-
 }

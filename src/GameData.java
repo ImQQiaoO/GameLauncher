@@ -1,15 +1,25 @@
 public class GameData {
+    private int order;
     private String gamePosition;
-    private int playTime;
+    private long playTime;
     private char status;
 
     public GameData() {
     }
 
-    public GameData(String gameName, int playTime, char status) {
-        this.gamePosition = gameName;
+    public GameData(int order, String gamePosition, long playTime, char status) {
+        this.order = order;
+        this.gamePosition = gamePosition;
         this.playTime = playTime;
         this.status = status;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public String getGamePosition() {
@@ -20,11 +30,11 @@ public class GameData {
         this.gamePosition = gamePosition;
     }
 
-    public int getPlayTime() {
+    public long getPlayTime() {
         return playTime;
     }
 
-    public void setPlayTime(int playTime) {
+    public void setPlayTime(long playTime) {
         this.playTime = playTime;
     }
 
@@ -37,6 +47,6 @@ public class GameData {
     }
 
     public String toString() {
-        return "GameData{gamePosition = " + gamePosition + ", playTime = " + playTime + ", status = " + status + "}";
+        return "GameData{order = " + order + ", gamePosition = " + gamePosition + ", playTime = " + playTime + ", status = " + status + "}";
     }
 }
