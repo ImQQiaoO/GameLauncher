@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -34,7 +35,7 @@ public class ExecuteProcess {
             while (shut) {
                 shut = process.isAlive();
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -49,9 +50,13 @@ public class ExecuteProcess {
                     }
                 }
             }
-            defaultPage.remove(ListScrollPane.scrollPane);
+            SwingUtilities.invokeLater(() -> {
+                // 在 EDT 线程中执行修改操作
+                defaultPage.remove(ListScrollPane.scrollPane);
+            });
             ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
             listScrollPane.showGameList();
+            System.out.println("Game Over");
         }).start();
 //        DefaultPage.gameList.updateUI();
 
