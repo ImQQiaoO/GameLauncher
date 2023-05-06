@@ -21,7 +21,7 @@ public class AddGame {
         writer.write(DefaultPage.dataList.size() + "=" + chosenFilePath + "=0=1\n");
         writer.close();
         DefaultPage.gameDataReader();
-        Comparator<GameData> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());
+        Comparator<GameInfo> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());
         DefaultPage.dataList.sort(gameDataComparator);
         String gameName = chosenFilePath.substring(chosenFilePath.lastIndexOf("\\") + 1,
                 chosenFilePath.indexOf(".exe"));

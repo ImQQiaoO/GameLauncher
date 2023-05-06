@@ -1,31 +1,24 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Formatter;
 import java.util.Vector;
 
 import static java.awt.Color.black;
 
 public class DefaultPage extends JPanel {
 
-    static ArrayList<GameData> dataList; //The data in this ArrayList is sequential
+    Process process;
+    DefaultPage defaultPage;
+    static int selectedIndex;
     static Vector<Object> content;
     static JList<Object> gameList;
+    static ArrayList<GameInfo> dataList; //The data in this ArrayList is sequential
     static ArrayList<Icon> iconList;
-    Process process;
-    int selectedIndex;
-    String selectedGame = "";
-    boolean isChose = false;
     static final String filePath = "_playedGameList_.txt";
 
     public DefaultPage() {
@@ -51,7 +44,7 @@ public class DefaultPage extends JPanel {
             String line;
             while ((line = reader.readLine()) != null) {
                 data = line.split("=");
-                dataList.add(new GameData(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3].charAt(0)));
+                dataList.add(new GameInfo(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3].charAt(0)));
             }
             reader.close();
         } catch (IOException e) {
@@ -59,7 +52,10 @@ public class DefaultPage extends JPanel {
         }
     }
 
-    public void showFirstPage() {
+    public void showFirstPage(DefaultPage defaultPage) {
+
+        this.defaultPage = defaultPage;
+
         //frame items
         JFrame frame = new JFrame();
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.LINE_AXIS));
@@ -73,7 +69,8 @@ public class DefaultPage extends JPanel {
         frame.setIconImage(Data.frameIcon.getImage());
 
         //game list
-        showGameList();
+        ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
+        listScrollPane.showGameList();
 
         //buttons
         JButton addButton = new JButton("+");
@@ -98,7 +95,7 @@ public class DefaultPage extends JPanel {
         startButton.setFocusPainted(false);
         startButton.setBounds(750, 230, 100, 50);
         startButton.addActionListener(e -> {    //Add start button function.
-            ExecuteProcess executeProcess = new ExecuteProcess(selectedIndex, process);
+            ExecuteProcess executeProcess = new ExecuteProcess(selectedIndex, process, defaultPage);
             try {
                 executeProcess.runProcess();
             } catch (IOException | InterruptedException ex) {
@@ -108,79 +105,6 @@ public class DefaultPage extends JPanel {
         setLayout(null);
     }
 
-    public void showGameList() {
-        content = new Vector<>();
-        gameList = new JList<>(content);
-        Comparator<GameData> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());
-        dataList.sort(gameDataComparator);
-        iconList = new ArrayList<>();
-        for (GameData gameData : dataList) {
-            iconList.add(FileSystemView.getFileSystemView().getSystemIcon(new File(gameData.getGamePosition())));
-        }
-        for (GameData gameData : dataList) {
-            String gameName = gameData.getGamePosition().substring(gameData.getGamePosition().lastIndexOf("\\") + 1, gameData.getGamePosition().indexOf(".exe"));
-            content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
-                    "<td align='right'>" +
-                    new Formatter().format("%.2f", Double.parseDouble(String.valueOf(gameData.getPlayTime())) / 60000 / 60) +
-                    " hours" + "</td></tr></table></html>");
-        }
-        gameList.setBounds(10, 10, 200, 200);
-        gameList.setCellRenderer(new GameListRenderer());
-        JScrollPane scrollPane = new JScrollPane(gameList);
-        scrollPane.setBounds(10, 38, 300, 400);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            private final Dimension d = new Dimension();
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return new JButton() {
-                    @Override
-                    public Dimension getPreferredSize() {
-                        return d;
-                    }
-                };
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return new JButton() {
-                    @Override
-                    public Dimension getPreferredSize() {
-                        return d;
-                    }
-                };
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
-                g.setColor(new Color(121, 156, 173, 179));
-                g.fillRect(r.x, r.y, r.width, r.height);
-            }
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, c);
-                g2.setColor(new Color(27, 80, 104));
-                g2.fillRoundRect(r.x + 5, r.y, r.width - 10, r.height, 5, 5);
-                g2.dispose();
-            }
-        });
-        gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        gameList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) { // 确保只在最后一次选择事件之后调用
-                selectedIndex = gameList.getSelectedIndex();
-                selectedGame = dataList.get(selectedIndex).getGamePosition().
-                        substring(dataList.get(selectedIndex).getGamePosition().lastIndexOf("\\") + 1,
-                                dataList.get(selectedIndex).getGamePosition().indexOf(".exe"));
-                System.out.println(dataList.get(selectedIndex)); // 输出选中的选项
-                System.out.println(selectedIndex);
-            }
-        });
-        this.add(scrollPane);
-    }
 
     public static class GameListRenderer extends DefaultListCellRenderer {
         @Override
@@ -244,11 +168,6 @@ public class DefaultPage extends JPanel {
         g2d.setBackground(c);
     }
 
-    public void changeBackgroundColor(Graphics g, int red, int green, int blue) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setBackground(new Color(red, green, blue));
-    }
-
     public void clearBackground(Graphics g, int width, int height) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.clearRect(0, 0, width, height);
@@ -256,10 +175,6 @@ public class DefaultPage extends JPanel {
 
     public void changeColor(Graphics g, Color c) {
         g.setColor(c);
-    }
-
-    public void changeColor(Graphics g, int red, int green, int blue) {
-        g.setColor(new Color(red, green, blue));
     }
 
     public void drawText(Graphics g, int x, int y, String s, int size) {
@@ -287,23 +202,4 @@ public class DefaultPage extends JPanel {
         g2d.draw(new Line2D.Double(x1, y1, x2, y2));
     }
 
-    void drawRectangle(Graphics g, int x, int y, int width, int height) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.draw(new Rectangle2D.Double(x, y, width, height));
-    }
-
-    void drawSolidRectangle(Graphics g, int x, int y, int width, int height) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.fill(new Rectangle2D.Double(x, y, width, height));
-    }
-
-    void drawCircle(Graphics g, int x, int y, double radius) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.draw(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
-    }
-
-    void drawSolidCircle(Graphics g, int x, int y, double radius) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.fill(new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2));
-    }
 }

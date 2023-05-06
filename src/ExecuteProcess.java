@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class ExecuteProcess {
-    private int selectedGameIndex;
+    private final int selectedGameIndex;
     private Process process;
+    private final DefaultPage defaultPage;
 
-    public ExecuteProcess(int selectedGameIndex, Process process) {
+
+    public ExecuteProcess(int selectedGameIndex, Process process, DefaultPage defaultPage) {
         this.selectedGameIndex = selectedGameIndex;
         this.process = process;
+        this.defaultPage = defaultPage;
     }
 
     public void runProcess() throws IOException, InterruptedException {
@@ -21,11 +24,11 @@ public class ExecuteProcess {
         process = Runtime.getRuntime().exec(DefaultPage.dataList.get(selectedGameIndex).getGamePosition(),
                 null, selectedDirectory);
         long startTime = System.currentTimeMillis();
-        long endTime = startTime;
+        long endTime;
         boolean shut = process.isAlive();
         while (shut) {
             shut = process.isAlive();
-            Thread.sleep(10000);
+            Thread.sleep(5000);
             if (!shut) {
                 endTime = System.currentTimeMillis();
                 long playTimeMs = endTime - startTime;
@@ -33,11 +36,11 @@ public class ExecuteProcess {
                 modifyGameList(selectedGameIndex, 2, String.valueOf(totalPlatTimeMs));
             }
         }
-        //TODO: Update the JList after the process is closed, But How?
-//        DefaultPage.content.clear();
-//        DefaultPage.gameList.removeAll();
-//        DefaultPage.showTheList();
-        DefaultPage.gameList.updateUI();
+
+        defaultPage.remove(ListScrollPane.scrollPane);
+        ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
+        listScrollPane.showGameList();
+//        DefaultPage.gameList.updateUI();
         for (int i = 0; i < DefaultPage.dataList.size(); i++) {/*           */
             System.out.println(DefaultPage.dataList.get(i));
         }
@@ -52,19 +55,20 @@ public class ExecuteProcess {
             case 3 -> DefaultPage.dataList.get(modifyIndex).setStatus(modifyContent.charAt(0));
             default -> throw new IOException("Invalid modifyItem");
         }
+        //这是修改游戏时长之后的dataList
+        DefaultPage.dataList.sort(Comparator.comparingLong(GameInfo::getPlayTime));
         //Copy the dataList to a new ArrayList
-        ArrayList<GameData> newDataList = new ArrayList<>(DefaultPage.dataList);
+        ArrayList<GameInfo> newDataList = new ArrayList<>(DefaultPage.dataList);
         //Sort the dataList
-        newDataList.sort(Comparator.comparingInt(GameData::getOrder));
+        newDataList.sort(Comparator.comparingInt(GameInfo::getOrder));
         //写入文件
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath));
-            for (GameData gameData : newDataList) {
-                writer.write(gameData.getOrder() + "=" + gameData.getGamePosition() + "=" +
-                        gameData.getPlayTime() + "=" + gameData.getStatus() + "\n");
+            for (GameInfo gameInfo : newDataList) {
+                writer.write(gameInfo.getOrder() + "=" + gameInfo.getGamePosition() + "=" +
+                        gameInfo.getPlayTime() + "=" + gameInfo.getStatus() + "\n");
             }
             writer.close();
-            System.out.println("文件已写入");
         } catch (IOException e) {
             e.printStackTrace();
         }
