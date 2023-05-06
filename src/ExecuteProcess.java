@@ -18,32 +18,43 @@ public class ExecuteProcess {
     }
 
     public void runProcess() throws IOException, InterruptedException {
-        //Get the directory of the selected game
-        File selectedDirectory = new File(DefaultPage.dataList.get(selectedGameIndex).getGamePosition()
-                .substring(0, DefaultPage.dataList.get(selectedGameIndex).getGamePosition().lastIndexOf("\\")));
-        process = Runtime.getRuntime().exec(DefaultPage.dataList.get(selectedGameIndex).getGamePosition(),
-                null, selectedDirectory);
-        long startTime = System.currentTimeMillis();
-        long endTime;
-        boolean shut = process.isAlive();
-        while (shut) {
-            shut = process.isAlive();
-            Thread.sleep(5000);
-            if (!shut) {
-                endTime = System.currentTimeMillis();
-                long playTimeMs = endTime - startTime;
-                long totalPlatTimeMs = playTimeMs + DefaultPage.dataList.get(selectedGameIndex).getPlayTime();
-                modifyGameList(selectedGameIndex, 2, String.valueOf(totalPlatTimeMs));
+        new Thread(() -> {
+            //Get the directory of the selected game
+            File selectedDirectory = new File(DefaultPage.dataList.get(selectedGameIndex).getGamePosition()
+                    .substring(0, DefaultPage.dataList.get(selectedGameIndex).getGamePosition().lastIndexOf("\\")));
+            try {
+                process = Runtime.getRuntime().exec(DefaultPage.dataList.get(selectedGameIndex).getGamePosition(),
+                        null, selectedDirectory);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
-
-        defaultPage.remove(ListScrollPane.scrollPane);
-        ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
-        listScrollPane.showGameList();
+            long startTime = System.currentTimeMillis();
+            long endTime;
+            boolean shut = process.isAlive();
+            while (shut) {
+                shut = process.isAlive();
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                if (!shut) {
+                    endTime = System.currentTimeMillis();
+                    long playTimeMs = endTime - startTime;
+                    long totalPlatTimeMs = playTimeMs + DefaultPage.dataList.get(selectedGameIndex).getPlayTime();
+                    try {
+                        modifyGameList(selectedGameIndex, 2, String.valueOf(totalPlatTimeMs));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            defaultPage.remove(ListScrollPane.scrollPane);
+            ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
+            listScrollPane.showGameList();
+        }).start();
 //        DefaultPage.gameList.updateUI();
-        for (int i = 0; i < DefaultPage.dataList.size(); i++) {/*           */
-            System.out.println(DefaultPage.dataList.get(i));
-        }
+
     }
 
     public static void modifyGameList(int modifyIndex, int modifyItem, String modifyContent) throws IOException {
