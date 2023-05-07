@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Formatter;
 
 public class ExecuteProcess {
     private final int selectedGameIndex;
@@ -21,6 +22,9 @@ public class ExecuteProcess {
     public void runProcess() throws IOException, InterruptedException {
         new Thread(() -> {
             //Get the directory of the selected game
+            String gameName = DefaultPage.dataList.get(selectedGameIndex).getGamePosition()
+                    .substring(DefaultPage.dataList.get(selectedGameIndex).getGamePosition().lastIndexOf("\\") + 1,
+                            DefaultPage.dataList.get(selectedGameIndex).getGamePosition().indexOf(".exe"));
             File selectedDirectory = new File(DefaultPage.dataList.get(selectedGameIndex).getGamePosition()
                     .substring(0, DefaultPage.dataList.get(selectedGameIndex).getGamePosition().lastIndexOf("\\")));
             try {
@@ -48,6 +52,12 @@ public class ExecuteProcess {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    System.out.println(playTimeMs);
+                    System.out.println(new Formatter().format("%.0f", (double) (playTimeMs / 1000 / 60)));
+                    JOptionPane.showMessageDialog(null,
+                            "You have played " + gameName +
+                                    " for " + new Formatter().format("%.0f", (double) (playTimeMs / 1000 / 60)) + " minutes",
+                            "Play Happily!", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
             SwingUtilities.invokeLater(() -> {
