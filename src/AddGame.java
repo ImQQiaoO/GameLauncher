@@ -7,8 +7,17 @@ import java.util.Formatter;
 
 public class AddGame {
     String chosenFilePath;
+    boolean repeat;
     public void addNewGame() throws IOException {
+        repeat = false;
         chosenFilePath = fileChooser();
+        // 检查选择到的文件是否有重复
+        for (GameInfo gameInfo : DefaultPage.dataList) {
+            if (gameInfo.getGamePosition().equals(chosenFilePath)) {
+                repeat = true;
+                break;
+            }
+        }
         if (chosenFilePath.equals("nullnull")) {
             return;
         } else if (!chosenFilePath.substring(chosenFilePath.lastIndexOf(".")).equals(".exe")) {
@@ -16,7 +25,12 @@ public class AddGame {
                     , JOptionPane.ERROR_MESSAGE);
             addNewGame();
             return;
-        }   // TODO: Judge if the file is already in the list.
+        } else if (repeat) {
+            JOptionPane.showMessageDialog(null, "This game already exists in the list.", "Please Choose Again"
+                    , JOptionPane.ERROR_MESSAGE);
+            addNewGame();
+            return;
+        }
         BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath, true));
         writer.write(DefaultPage.dataList.size() + "=" + chosenFilePath + "=0=1\n");
         writer.close();

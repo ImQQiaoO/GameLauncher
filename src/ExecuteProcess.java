@@ -58,8 +58,6 @@ public class ExecuteProcess {
             listScrollPane.showGameList();
             System.out.println("Game Over");
         }).start();
-//        DefaultPage.gameList.updateUI();
-
     }
 
     public static void modifyGameList(int modifyIndex, int modifyItem, String modifyContent) throws IOException {
