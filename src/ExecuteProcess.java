@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Formatter;
 
 public class ExecuteProcess {
     private final int selectedGameIndex;
@@ -52,11 +51,9 @@ public class ExecuteProcess {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    System.out.println(playTimeMs);
-                    System.out.println(new Formatter().format("%.0f", (double) (playTimeMs / 1000 / 60)));
                     JOptionPane.showMessageDialog(null,
                             "You have played " + gameName +
-                                    " for " + new Formatter().format("%.0f", (double) (playTimeMs / 1000 / 60)) + " minutes",
+                                    " for " + Math.round((double) playTimeMs / 1000 / 60) + " minutes",
                             "Play Happily!", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
