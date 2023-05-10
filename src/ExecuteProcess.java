@@ -67,7 +67,8 @@ public class ExecuteProcess {
         }).start();
     }
 
-    public static void modifyGameList(int modifyIndex, int modifyItem, String modifyContent) throws IOException {
+    public static synchronized void modifyGameList(int modifyIndex, int modifyItem, String modifyContent)
+            throws IOException {
 
         switch (modifyItem) {
             case 0 -> DefaultPage.dataList.get(modifyIndex).setOrder(Integer.parseInt(modifyContent));
