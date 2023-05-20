@@ -34,15 +34,15 @@ public class ExecuteProcess {
             }
             long startTime = System.currentTimeMillis();
             long endTime;
-            boolean shut = process.isAlive();
-            while (shut) {
-                shut = process.isAlive();
+            boolean alive = process.isAlive();
+            while (alive) {
+                alive = process.isAlive();
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                if (!shut) {
+                if (!alive) {
                     endTime = System.currentTimeMillis();
                     long playTimeMs = endTime - startTime;
                     long totalPlatTimeMs = playTimeMs + DefaultPage.dataList.get(selectedGameIndex).getPlayTime();

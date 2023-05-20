@@ -8,6 +8,7 @@ import java.util.Formatter;
 public class AddGame {
     String chosenFilePath;
     boolean repeat;
+
     public void addNewGame() throws IOException {
         repeat = false;
         chosenFilePath = fileChooser();
@@ -31,6 +32,16 @@ public class AddGame {
             addNewGame();
             return;
         }
+
+        // Create a new JFrame to receive the Game Images URL
+        JFrame frame = new JFrame("Image URL");
+        frame.setContentPane(new URLReader(frame, chosenFilePath.substring(chosenFilePath.lastIndexOf("\\") + 1,
+                chosenFilePath.indexOf(".exe"))));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.setResizable(false);
+
         BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath, true));
         writer.write(DefaultPage.dataList.size() + "=" + chosenFilePath + "=0=1\n");
         writer.close();
