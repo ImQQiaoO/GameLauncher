@@ -5,3 +5,4 @@ _playedGameList_.txt
 *.iml
 !/src/OldMain.java
 src/OldMain.java
+GameImageDepository
