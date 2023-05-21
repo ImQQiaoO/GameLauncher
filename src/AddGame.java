@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.Formatter;
 
 public class AddGame {
-    String chosenFilePath;
+    static String chosenFilePath;
     boolean repeat;
 
     public void addNewGame() throws IOException {
@@ -42,8 +42,13 @@ public class AddGame {
         frame.setVisible(true);
         frame.setResizable(false);
 
+//        newGameWriter();
+    }
+
+    public static void newGameWriter(String imagePosition) throws IOException {
+        // Write the game data to the file
         BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath, true));
-        writer.write(DefaultPage.dataList.size() + "=" + chosenFilePath + "=0=1\n");
+        writer.write(DefaultPage.dataList.size() + "=" + chosenFilePath + "=0=1=" + imagePosition + "\n");
         writer.close();
         DefaultPage.gameDataReader();
         Comparator<GameInfo> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());

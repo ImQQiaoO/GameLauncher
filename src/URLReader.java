@@ -70,7 +70,14 @@ public class URLReader extends JPanel {
         });
 
         // If the cancel button is clicked, close the window
-        cancelButton.addActionListener(e -> frame.dispose());
+        cancelButton.addActionListener(e -> {
+            try {
+                getImage(url);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            frame.dispose();
+        });
 
         // 设置面板的大小并将其添加到窗口中
         panel.setPreferredSize(new Dimension(400, 150));
@@ -104,9 +111,12 @@ public class URLReader extends JPanel {
     }
 
     public synchronized static void DownloadImage(String gameName, String urlString) throws IOException {
-        if (urlString.equals("null")) { //If click the cancel button, return
+        if (urlString.equals("null")) { //If click the cancel button, game image position is NULL, and return
+            AddGame.newGameWriter(null);
             return;
-        } else if (urlString.equals("")) {  //If the input is empty, show the error message, input again
+
+        } else if (urlString.equals("")) {
+            //Did not enter anything, but click the confirm button, show the error message, input again
             JFrame frame = new JFrame("Image URL");
             JOptionPane.showMessageDialog(null, "Empty input.", "Please Enter Again"
                     , JOptionPane.ERROR_MESSAGE);
@@ -116,7 +126,8 @@ public class URLReader extends JPanel {
             frame.setVisible(true);
             frame.setResizable(false);
             return;
-        } else if (!urlString.contains("http")) {   //If the input is not a URL, show the error message, input again
+        } else if (!urlString.contains("http")) {
+            //If the input is not a URL, show the error message, input again
             JFrame frame = new JFrame("Image URL");
             JOptionPane.showMessageDialog(null, "Invalid URL.", "Please Enter Again"
                     , JOptionPane.ERROR_MESSAGE);
@@ -142,8 +153,10 @@ public class URLReader extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        FileOutputStream out = new FileOutputStream( "./GameImageDepository/" + gameName + ".png");
+        FileOutputStream out = new FileOutputStream("./GameImageDepository/" + gameName + ".png");
         out.write(output.toByteArray());
         out.close();
+        // At that time, after the validity check, call the method to write the game data to the file
+        AddGame.newGameWriter(new File("").getAbsolutePath() + "GameImageDepository/" + gameName + ".png");
     }
 }

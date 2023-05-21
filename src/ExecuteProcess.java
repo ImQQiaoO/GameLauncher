@@ -47,7 +47,7 @@ public class ExecuteProcess {
                     long playTimeMs = endTime - startTime;
                     long totalPlatTimeMs = playTimeMs + DefaultPage.dataList.get(selectedGameIndex).getPlayTime();
                     try {
-                        modifyGameList(selectedGameIndex, 2, String.valueOf(totalPlatTimeMs));
+                        modifyGameList(selectedGameIndex, ModifyItem.PLAY_TIME, String.valueOf(totalPlatTimeMs));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -71,10 +71,11 @@ public class ExecuteProcess {
             throws IOException {
 
         switch (modifyItem) {
-            case 0 -> DefaultPage.dataList.get(modifyIndex).setOrder(Integer.parseInt(modifyContent));
-            case 1 -> DefaultPage.dataList.get(modifyIndex).setGamePosition(modifyContent);
-            case 2 -> DefaultPage.dataList.get(modifyIndex).setPlayTime(Long.parseLong(modifyContent));
-            case 3 -> DefaultPage.dataList.get(modifyIndex).setStatus(modifyContent.charAt(0));
+            case ModifyItem.ORDER -> DefaultPage.dataList.get(modifyIndex).setOrder(Integer.parseInt(modifyContent));
+            case ModifyItem.GAME_POSITION -> DefaultPage.dataList.get(modifyIndex).setGamePosition(modifyContent);
+            case ModifyItem.PLAY_TIME -> DefaultPage.dataList.get(modifyIndex).setPlayTime(Long.parseLong(modifyContent));
+            case ModifyItem.STATUS -> DefaultPage.dataList.get(modifyIndex).setStatus(modifyContent.charAt(0));
+            case ModifyItem.IMAGE_POSITION -> DefaultPage.dataList.get(modifyIndex).setImagePosition(modifyContent);
             default -> throw new IOException("Invalid modifyItem");
         }
         //这是修改游戏时长之后的dataList
@@ -88,7 +89,7 @@ public class ExecuteProcess {
             BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath));
             for (GameInfo gameInfo : newDataList) {
                 writer.write(gameInfo.getOrder() + "=" + gameInfo.getGamePosition() + "=" +
-                        gameInfo.getPlayTime() + "=" + gameInfo.getStatus() + "\n");
+                        gameInfo.getPlayTime() + "=" + gameInfo.getStatus() +  "=" + gameInfo.getImagePosition() +  "\n");
             }
             writer.close();
         } catch (IOException e) {

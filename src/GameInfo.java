@@ -3,15 +3,17 @@ public class GameInfo {
     private String gamePosition;
     private long playTime;
     private char status;
+    private String imagePosition;
 
     public GameInfo() {
     }
 
-    public GameInfo(int order, String gamePosition, long playTime, char status) {
+    public GameInfo(int order, String gamePosition, long playTime, char status, String imagePosition) {
         this.order = order;
         this.gamePosition = gamePosition;
         this.playTime = playTime;
         this.status = status;
+        this.imagePosition = imagePosition;
     }
 
     public int getOrder() {
@@ -46,7 +48,15 @@ public class GameInfo {
         this.status = status;
     }
 
+    public String getImagePosition() {
+        return imagePosition;
+    }
+
+    public void setImagePosition(String imagePosition) {
+        this.imagePosition = imagePosition;
+    }
+
     public String toString() {
-        return "GameInfo{order = " + order + ", gamePosition = " + gamePosition + ", playTime = " + playTime + ", status = " + status + "}";
+        return "GameInfo{order = " + order + ", gamePosition = " + gamePosition + ", playTime = " + playTime + ", status = " + status + ", imagePosition = " + imagePosition + "}";
     }
 }
