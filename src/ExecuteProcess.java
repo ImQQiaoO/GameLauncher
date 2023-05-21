@@ -21,6 +21,10 @@ public class ExecuteProcess {
     public void runProcess() throws IOException, InterruptedException {
         new Thread(() -> {
             //Get the directory of the selected game
+            if (selectedGameIndex == -1) { //Dealing with situations where nothing is selected but the start button is pressed
+                JOptionPane.showMessageDialog(null, "Please select a game first", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String gameName = DefaultPage.dataList.get(selectedGameIndex).getGamePosition()
                     .substring(DefaultPage.dataList.get(selectedGameIndex).getGamePosition().lastIndexOf("\\") + 1,
                             DefaultPage.dataList.get(selectedGameIndex).getGamePosition().indexOf(".exe"));
@@ -64,6 +68,7 @@ public class ExecuteProcess {
             ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
             listScrollPane.showGameList();
             System.out.println("Game Over");
+            DefaultPage.selectedIndex = -1; //Reset the selected index
         }).start();
     }
 

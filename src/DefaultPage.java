@@ -14,7 +14,7 @@ public class DefaultPage extends JPanel {
 
     Process process;
     DefaultPage defaultPage;
-    static int selectedIndex;
+    static int selectedIndex = -1;
     static Vector<Object> content;
     static JList<Object> gameList;
     static ArrayList<GameInfo> dataList; //The data in this ArrayList is sequential
