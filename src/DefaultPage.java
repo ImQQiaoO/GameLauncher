@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import static java.awt.Color.black;
-
 public class DefaultPage extends JPanel {
 
     Process process;
@@ -192,9 +190,8 @@ public class DefaultPage extends JPanel {
         drawLine(g, 330, 0, 330, 550);
         drawLine(g, 330, 220, 880, 220);
         drawText(g, 75, 482, "Add A New Game", 15);
-        changeColor(g, black);
-        changeColor(g, new Color(27, 80, 104));
-//        drawText(g, 210, 120, selectedGame, 15);
+        // Draw the game Image
+
     }
 
     void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
