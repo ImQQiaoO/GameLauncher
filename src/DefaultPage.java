@@ -1,6 +1,8 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -191,7 +193,15 @@ public class DefaultPage extends JPanel {
         drawLine(g, 330, 220, 880, 220);
         drawText(g, 75, 482, "Add A New Game", 15);
         // Draw the game Image
-
+        if (selectedIndex >= 0 &&!dataList.get(selectedIndex).getImagePosition().equals("null")) {
+            try {
+                BufferedImage image = ImageIO.read(new File(dataList.get(selectedIndex).getImagePosition()));
+                g.drawImage(image, 350, 10, 500, 200, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //
     }
 
     void drawLine(Graphics g, int x1, int y1, int x2, int y2) {

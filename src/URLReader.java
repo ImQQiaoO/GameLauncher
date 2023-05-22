@@ -157,6 +157,6 @@ public class URLReader extends JPanel {
         out.write(output.toByteArray());
         out.close();
         // At that time, after the validity check, call the method to write the game data to the file
-        AddGame.newGameWriter(new File("").getAbsolutePath() + "GameImageDepository/" + gameName + ".png");
+        AddGame.newGameWriter(new File("").getAbsolutePath() + "\\GameImageDepository\\" + gameName + ".png");
     }
 }
