@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Vector;
 
 //java -cp .\out\production\GameLauncher "-Dfile.encoding=UTF-8" Main
@@ -202,7 +203,14 @@ public class DefaultPage extends JPanel {
                 e.printStackTrace();
             }
         }
-        //
+        // Show The Game Info
+        if (selectedIndex >= 0) {
+            String selectedPath = dataList.get(selectedIndex).getGamePosition();
+            drawText(g, 350, 245, selectedPath.substring(selectedPath.lastIndexOf("\\") + 1,
+                    selectedPath.indexOf(".exe")), 15);
+            Double currGameTime = Double.parseDouble(String.valueOf(dataList.get(selectedIndex).getPlayTime())) / 60000 / 60;
+            drawText(g, 350, 275, new Formatter().format("%.2f",currGameTime) + " Hours", 15);
+        }
     }
 
     void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
