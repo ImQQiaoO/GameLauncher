@@ -51,7 +51,7 @@ public class ExecuteProcess {
                     long playTimeMs = endTime - startTime;
                     long totalPlatTimeMs = playTimeMs + DefaultPage.dataList.get(selectedGameIndex).getPlayTime();
                     try {
-                        modifyGameList(selectedGameIndex, ModifyItem.PLAY_TIME, String.valueOf(totalPlatTimeMs));
+                        modifyGameList(selectedGameIndex, ItemIndex.PLAY_TIME, String.valueOf(totalPlatTimeMs));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -76,11 +76,11 @@ public class ExecuteProcess {
             throws IOException {
 
         switch (modifyItem) {
-            case ModifyItem.ORDER -> DefaultPage.dataList.get(modifyIndex).setOrder(Integer.parseInt(modifyContent));
-            case ModifyItem.GAME_POSITION -> DefaultPage.dataList.get(modifyIndex).setGamePosition(modifyContent);
-            case ModifyItem.PLAY_TIME -> DefaultPage.dataList.get(modifyIndex).setPlayTime(Long.parseLong(modifyContent));
-            case ModifyItem.STATUS -> DefaultPage.dataList.get(modifyIndex).setStatus(modifyContent.charAt(0));
-            case ModifyItem.IMAGE_POSITION -> DefaultPage.dataList.get(modifyIndex).setImagePosition(modifyContent);
+            case ItemIndex.ORDER -> DefaultPage.dataList.get(modifyIndex).setOrder(Integer.parseInt(modifyContent));
+            case ItemIndex.GAME_POSITION -> DefaultPage.dataList.get(modifyIndex).setGamePosition(modifyContent);
+            case ItemIndex.PLAY_TIME -> DefaultPage.dataList.get(modifyIndex).setPlayTime(Long.parseLong(modifyContent));
+            case ItemIndex.STATUS -> DefaultPage.dataList.get(modifyIndex).setStatus(modifyContent.charAt(0));
+            case ItemIndex.IMAGE_POSITION -> DefaultPage.dataList.get(modifyIndex).setImagePosition(modifyContent);
             default -> throw new IOException("Invalid modifyItem");
         }
         //这是修改游戏时长之后的dataList

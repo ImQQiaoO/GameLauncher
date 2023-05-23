@@ -1,4 +1,4 @@
-public class ModifyItem {
+public class ItemIndex {
     // 枚举类，用于标记修改的项目
     public static final int ORDER = 0;
     public static final int GAME_POSITION = 1;
