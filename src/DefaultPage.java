@@ -16,6 +16,7 @@ public class DefaultPage extends JPanel {
 
     Process process;
     DefaultPage defaultPage;
+    static JButton startButton;
     static int selectedIndex = -1;
     static Vector<Object> content;
     static JList<Object> gameList;
@@ -70,9 +71,6 @@ public class DefaultPage extends JPanel {
         frame.setResizable(false);
         frame.setIconImage(Data.frameIcon.getImage());
 
-        //game list
-        ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
-        listScrollPane.showGameList();
 
         //buttons
         JButton addButton = new JButton("+");
@@ -90,13 +88,19 @@ public class DefaultPage extends JPanel {
             }
         });
 
-        JButton startButton = new JButton("Start");
+        startButton = new JButton("Start");
         this.add(startButton);
-        startButton.setBackground(new Color(27, 80, 104));
-        startButton.setForeground(Color.WHITE);
+        buttonColor();
         startButton.setFocusPainted(false);
         startButton.setBounds(750, 230, 100, 50);
         startButton.addActionListener(e -> {    //Add start button function.
+            if (selectedIndex == -1) {  //If no game is selected, do nothing.
+                System.out.println("No game selected");
+                return;
+            } else if (dataList.get(selectedIndex).getStatus() == '0') { //If the game is not installed, do nothing.
+                System.out.println("Game is not installed");
+                return;
+            }
             ExecuteProcess executeProcess = new ExecuteProcess(selectedIndex, process, defaultPage);
             try {
                 executeProcess.runProcess();
@@ -104,7 +108,27 @@ public class DefaultPage extends JPanel {
                 throw new RuntimeException(ex);
             }
         });
+
+        //game list
+        ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
+        listScrollPane.showGameList();
+
         setLayout(null);
+    }
+
+    public static void buttonColor() {
+        if (selectedIndex == -1) {
+            startButton.setBackground(new Color(75, 75, 75));
+            startButton.setForeground(Color.WHITE);
+        } else {
+            if (dataList.get(selectedIndex).getStatus() == '0') {
+                startButton.setBackground(new Color(75, 75, 75));
+                startButton.setForeground(Color.WHITE);
+            } else {
+                startButton.setBackground(new Color(27, 80, 104));
+                startButton.setForeground(Color.WHITE);
+            }
+        }
     }
 
 
@@ -209,7 +233,7 @@ public class DefaultPage extends JPanel {
             drawText(g, 350, 245, selectedPath.substring(selectedPath.lastIndexOf("\\") + 1,
                     selectedPath.indexOf(".exe")), 15);
             Double currGameTime = Double.parseDouble(String.valueOf(dataList.get(selectedIndex).getPlayTime())) / 60000 / 60;
-            drawText(g, 350, 275, new Formatter().format("%.2f",currGameTime) + " Hours", 15);
+            drawText(g, 350, 275, new Formatter().format("%.2f", currGameTime) + " Hours", 15);
         }
     }
 
