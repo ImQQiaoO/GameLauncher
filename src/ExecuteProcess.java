@@ -67,6 +67,7 @@ public class ExecuteProcess {
             });
             ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
             listScrollPane.showGameList();
+            defaultPage.repaint();
             System.out.println("Game Over");
             DefaultPage.selectedIndex = -1; //Reset the selected index
         }).start();

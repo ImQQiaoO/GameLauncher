@@ -95,10 +95,12 @@ public class DefaultPage extends JPanel {
         startButton.setBounds(750, 230, 100, 50);
         startButton.addActionListener(e -> {    //Add start button function.
             if (selectedIndex == -1) {  //If no game is selected, do nothing.
-                System.out.println("No game selected");
+                JOptionPane.showMessageDialog(null, "No game selected.", "Error"
+                        , JOptionPane.WARNING_MESSAGE);
                 return;
             } else if (dataList.get(selectedIndex).getStatus() == '0') { //If the game is not installed, do nothing.
-                System.out.println("Game is not installed");
+                JOptionPane.showMessageDialog(null, "Game is not installed", "Error"
+                        , JOptionPane.WARNING_MESSAGE);
                 return;
             }
             ExecuteProcess executeProcess = new ExecuteProcess(selectedIndex, process, defaultPage);
