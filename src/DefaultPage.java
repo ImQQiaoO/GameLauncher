@@ -46,7 +46,7 @@ public class DefaultPage extends JPanel {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line;
             while ((line = reader.readLine()) != null) {
-                data = line.split("=");
+                data = line.split("=@#");
                 dataList.add(new GameInfo(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3].charAt(0), data[4]));
             }
             reader.close();

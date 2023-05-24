@@ -94,8 +94,8 @@ public class ExecuteProcess {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath));
             for (GameInfo gameInfo : newDataList) {
-                writer.write(gameInfo.getOrder() + "=" + gameInfo.getGamePosition() + "=" +
-                        gameInfo.getPlayTime() + "=" + gameInfo.getStatus() +  "=" + gameInfo.getImagePosition() +  "\n");
+                writer.write(gameInfo.getOrder() + "=@#" + gameInfo.getGamePosition() + "=@#" +
+                        gameInfo.getPlayTime() + "=@#" + gameInfo.getStatus() +  "=@#" + gameInfo.getImagePosition() +  "\n");
             }
             writer.close();
         } catch (IOException e) {
