@@ -205,9 +205,9 @@ public class DefaultPage extends JPanel {
         g.setColor(c);
     }
 
-    public void drawText(Graphics g, int x, int y, String s, int size) {
+    public void drawText(Graphics g, int x, int y, String s, int size, String fontName) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setFont(new Font("", Font.BOLD, size));
+        g2d.setFont(new Font(fontName, Font.BOLD, size));
         g2d.drawString(s, x, y);
     }
 
@@ -216,10 +216,10 @@ public class DefaultPage extends JPanel {
         changeBackgroundColor(g, new Color(182, 206, 202));
         clearBackground(g, 880, 550);
         changeColor(g, new Color(27, 80, 104));
-        drawText(g, 10, 30, "My Game List:", 25);
+        drawText(g, 10, 30, "My Game List:", 25, "Arial");
         drawLine(g, 330, 0, 330, 550);
         drawLine(g, 330, 220, 880, 220);
-        drawText(g, 75, 482, "Add A New Game", 15);
+        drawText(g, 75, 482, "Add A New Game", 15, "Arial");
         // Draw the game Image
         if (selectedIndex >= 0 && !dataList.get(selectedIndex).getImagePosition().equals("null")) {
             try {
@@ -235,12 +235,12 @@ public class DefaultPage extends JPanel {
             String fileName = selectedPath.substring(selectedPath.lastIndexOf("\\") + 1,
                     selectedPath.indexOf(".exe"));
             if (dataList.get(selectedIndex).getGameName().equals("*-")) {
-                drawText(g, 350, 245,  "[" + fileName + "]", 15);
+                drawText(g, 350, 245,  "[" + fileName + "]", 15, "微软雅黑");
             } else {
-                drawText(g, 350, 245, dataList.get(selectedIndex).getGameName() + "[" + fileName + "]", 15);
+                drawText(g, 350, 245, dataList.get(selectedIndex).getGameName() + "[" + fileName + "]", 15,  "微软雅黑");
             }
             Double currGameTime = Double.parseDouble(String.valueOf(dataList.get(selectedIndex).getPlayTime())) / 60000 / 60;
-            drawText(g, 350, 275, new Formatter().format("%.2f", currGameTime) + " Hours", 15);
+            drawText(g, 350, 275, new Formatter().format("%.2f", currGameTime) + " Hours", 15, "微软雅黑");
         }
     }
 
