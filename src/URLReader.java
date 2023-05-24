@@ -8,12 +8,13 @@ import java.util.Objects;
 public class URLReader extends JPanel {
 
     String url = "null";
-    String gameName;
+    String inputGameName = "null";
+    String fileName;
     JFrame frame;
 
-    public URLReader(JFrame frame, String gameName) {
+    public URLReader(JFrame frame, String fileName) {
         this.frame = frame;
-        this.gameName = gameName;
+        this.fileName = fileName;
         createURLBox();
     }
 
@@ -24,20 +25,38 @@ public class URLReader extends JPanel {
 
         // 创建一个标签和一个输入框，并将它们添加到面板上
         JLabel label = new JLabel("Please Enter image URL:");
-        JTextField inputField = new JTextField();
-        inputField.setPreferredSize(new Dimension(220, 20));
+        JTextField urlInputField = new JTextField();
+        urlInputField.setPreferredSize(new Dimension(220, 20));
         GridBagConstraints gbcLabel = new GridBagConstraints();
         gbcLabel.gridx = 0;
         gbcLabel.gridy = 0; // 将gridY设置为0，即第0行
-        gbcLabel.insets = new Insets(5, 5, 5, 5);
+        gbcLabel.insets = new Insets(5, -17, 5, 5);
         panel.add(label, gbcLabel);
+
 
         GridBagConstraints gbcField = new GridBagConstraints();
         gbcField.gridx = 1;
         gbcField.gridy = 0; // 将gridY设置为0，即第0行
         gbcField.fill = GridBagConstraints.HORIZONTAL;
         gbcField.insets = new Insets(5, 5, 5, 5);
-        panel.add(inputField, gbcField);
+        panel.add(urlInputField, gbcField);
+
+        // 创建第二个标签和输入框，并将它们添加到面板上
+        JLabel label1 = new JLabel("Please Enter the game name:");
+        JTextField gameNameInputField = new JTextField();
+        gameNameInputField.setPreferredSize(new Dimension(220, 20));
+        GridBagConstraints gbcLabel1 = new GridBagConstraints();
+        gbcLabel1.gridx = 0;
+        gbcLabel1.gridy = 1; // 将gridy设置为1，即第1行
+        gbcLabel1.insets = new Insets(-40, 5, 5, 5);
+        panel.add(label1, gbcLabel1);
+
+        GridBagConstraints gbcField2 = new GridBagConstraints();
+        gbcField2.gridx = 1;
+        gbcField2.gridy = 1; // 将gridy设置为1，即第1行
+        gbcField2.fill = GridBagConstraints.HORIZONTAL;
+        gbcField2.insets = new Insets(-40, 5, 5, 5);
+        panel.add(gameNameInputField, gbcField2);
 
         // 创建一个面板来放置确认和取消按钮
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 40, 0)); // 水平间距为10，垂直间距为0
@@ -55,12 +74,17 @@ public class URLReader extends JPanel {
         gbcButtons.gridx = 1;
         gbcButtons.gridy = 1; // 将gridX设置为1，即第1行
         gbcButtons.fill = GridBagConstraints.HORIZONTAL;
-        gbcButtons.insets = new Insets(20, -100, 10, 50); // 修改下方间距
+        gbcButtons.insets = new Insets(40, -100, 10, 50); // 修改下方间距
         panel.add(buttonsPanel, gbcButtons);
+
+        // 设置面板的大小并将其添加到窗口中
+        panel.setPreferredSize(new Dimension(400, 150));
+        add(panel);
 
         // If the confirm button is clicked, set url to the input text and close the window
         confirmButton.addActionListener(e -> {
-            url = inputField.getText();
+            url = urlInputField.getText();
+            inputGameName = gameNameInputField.getText();
             try {
                 getImage(url);
             } catch (IOException ex) {
@@ -85,7 +109,6 @@ public class URLReader extends JPanel {
     }
 
     public void getImage(String url) throws IOException {
-        System.out.println(url);
 
         // Check if the image depository exists, if not, create one
         boolean imageDepositoryExist = false;
@@ -103,7 +126,7 @@ public class URLReader extends JPanel {
 
         new Thread(() -> {  // Download the image, and save it to the image depository
             try {
-                DownloadImage(gameName, url);
+                DownloadImage(fileName, url);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -116,15 +139,8 @@ public class URLReader extends JPanel {
             return;
 
         } else if (urlString.equals("")) {
-            //Did not enter anything, but click the confirm button, show the error message, input again
-            JFrame frame = new JFrame("Image URL");
-            JOptionPane.showMessageDialog(null, "Empty input.", "Please Enter Again"
-                    , JOptionPane.ERROR_MESSAGE);
-            frame.setContentPane(new URLReader(frame, gameName));
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-            frame.setResizable(false);
+            //Design Philosophy: Believing that users' actions have undergone profound thinking
+            AddGame.newGameWriter(null);
             return;
         } else if (!urlString.contains("http")) {
             //If the input is not a URL, show the error message, input again
