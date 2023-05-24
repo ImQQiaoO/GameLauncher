@@ -47,7 +47,7 @@ public class DefaultPage extends JPanel {
             String line;
             while ((line = reader.readLine()) != null) {
                 data = line.split("=@#");
-                dataList.add(new GameInfo(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3].charAt(0), data[4]));
+                dataList.add(new GameInfo(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3].charAt(0), data[4], data[5]));
             }
             reader.close();
         } catch (IOException e) {
@@ -207,7 +207,7 @@ public class DefaultPage extends JPanel {
 
     public void drawText(Graphics g, int x, int y, String s, int size) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setFont(new Font("Arial", Font.BOLD, size));
+        g2d.setFont(new Font("", Font.BOLD, size));
         g2d.drawString(s, x, y);
     }
 
@@ -232,8 +232,13 @@ public class DefaultPage extends JPanel {
         // Show The Game Info
         if (selectedIndex >= 0) {
             String selectedPath = dataList.get(selectedIndex).getGamePosition();
-            drawText(g, 350, 245, selectedPath.substring(selectedPath.lastIndexOf("\\") + 1,
-                    selectedPath.indexOf(".exe")), 15);
+            String fileName = selectedPath.substring(selectedPath.lastIndexOf("\\") + 1,
+                    selectedPath.indexOf(".exe"));
+            if (dataList.get(selectedIndex).getGameName().equals("*-")) {
+                drawText(g, 350, 245,  "[" + fileName + "]", 15);
+            } else {
+                drawText(g, 350, 245, dataList.get(selectedIndex).getGameName() + "[" + fileName + "]", 15);
+            }
             Double currGameTime = Double.parseDouble(String.valueOf(dataList.get(selectedIndex).getPlayTime())) / 60000 / 60;
             drawText(g, 350, 275, new Formatter().format("%.2f", currGameTime) + " Hours", 15);
         }

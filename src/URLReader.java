@@ -8,7 +8,7 @@ import java.util.Objects;
 public class URLReader extends JPanel {
 
     String url = "null";
-    String inputGameName = "null";
+    String inputGameName = "*-";
     String fileName;
     JFrame frame;
 
@@ -126,21 +126,21 @@ public class URLReader extends JPanel {
 
         new Thread(() -> {  // Download the image, and save it to the image depository
             try {
-                DownloadImage(fileName, url);
+                DownloadImage(fileName, url, inputGameName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
-    public synchronized static void DownloadImage(String gameName, String urlString) throws IOException {
+    public synchronized static void DownloadImage(String gameName, String urlString, String inputGameName) throws IOException {
         if (urlString.equals("null")) { //If click the cancel button, game image position is NULL, and return
-            AddGame.newGameWriter(null);
+            AddGame.newGameWriter(null, inputGameName);
             return;
 
         } else if (urlString.equals("")) {
             //Design Philosophy: Believing that users' actions have undergone profound thinking
-            AddGame.newGameWriter(null);
+            AddGame.newGameWriter(null, inputGameName);
             return;
         } else if (!urlString.contains("http")) {
             //If the input is not a URL, show the error message, input again
@@ -173,6 +173,6 @@ public class URLReader extends JPanel {
         out.write(output.toByteArray());
         out.close();
         // At that time, after the validity check, call the method to write the game data to the file
-        AddGame.newGameWriter(new File("").getAbsolutePath() + "\\GameImageDepository\\" + gameName + ".png");
+        AddGame.newGameWriter(new File("").getAbsolutePath() + "\\GameImageDepository\\" + gameName + ".png", inputGameName);
     }
 }

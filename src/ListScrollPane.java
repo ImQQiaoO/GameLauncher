@@ -29,11 +29,19 @@ public class ListScrollPane {
             DefaultPage.iconList.add(FileSystemView.getFileSystemView().getSystemIcon(new File(gameInfo.getGamePosition())));
         }
         for (GameInfo gameInfo : DefaultPage.dataList) {
-            String gameName = gameInfo.getGamePosition().substring(gameInfo.getGamePosition().lastIndexOf("\\") + 1, gameInfo.getGamePosition().indexOf(".exe"));
-            DefaultPage.content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
-                    "<td align='right'>" +
-                    new Formatter().format("%.2f", Double.parseDouble(String.valueOf(gameInfo.getPlayTime())) / 60000 / 60) +
-                    " hours" + "</td></tr></table></html>");
+            if (gameInfo.getGameName().equals("*-")){
+                String gameName = gameInfo.getGamePosition().substring(gameInfo.getGamePosition().lastIndexOf("\\") + 1, gameInfo.getGamePosition().indexOf(".exe"));
+                DefaultPage.content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
+                        "<td align='right'>" +
+                        new Formatter().format("%.2f", Double.parseDouble(String.valueOf(gameInfo.getPlayTime())) / 60000 / 60) +
+                        " hours" + "</td></tr></table></html>");
+            } else {
+                DefaultPage.content.add("<html><table width='250'><tr><td align='left'>" + gameInfo.getGameName() + "</td>" +
+                        "<td align='right'>" +
+                        new Formatter().format("%.2f", Double.parseDouble(String.valueOf(gameInfo.getPlayTime())) / 60000 / 60) +
+                        " hours" + "</td></tr></table></html>");
+            }
+
         }
         DefaultPage.gameList.revalidate();
         DefaultPage.gameList.setBounds(10, 10, 200, 200);

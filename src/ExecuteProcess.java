@@ -82,6 +82,7 @@ public class ExecuteProcess {
             case ItemIndex.PLAY_TIME -> DefaultPage.dataList.get(modifyIndex).setPlayTime(Long.parseLong(modifyContent));
             case ItemIndex.STATUS -> DefaultPage.dataList.get(modifyIndex).setStatus(modifyContent.charAt(0));
             case ItemIndex.IMAGE_POSITION -> DefaultPage.dataList.get(modifyIndex).setImagePosition(modifyContent);
+            case ItemIndex.GAME_NAME -> DefaultPage.dataList.get(modifyIndex).setGameName(modifyContent);
             default -> throw new IOException("Invalid modifyItem");
         }
         //这是修改游戏时长之后的dataList
@@ -95,7 +96,8 @@ public class ExecuteProcess {
             BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath));
             for (GameInfo gameInfo : newDataList) {
                 writer.write(gameInfo.getOrder() + "=@#" + gameInfo.getGamePosition() + "=@#" +
-                        gameInfo.getPlayTime() + "=@#" + gameInfo.getStatus() +  "=@#" + gameInfo.getImagePosition() +  "\n");
+                        gameInfo.getPlayTime() + "=@#" + gameInfo.getStatus() +  "=@#" + gameInfo.getImagePosition() +
+                        "=@#" + gameInfo.getGameName() +  "\n");
             }
             writer.close();
         } catch (IOException e) {

@@ -45,20 +45,27 @@ public class AddGame {
 //        newGameWriter();
     }
 
-    public static void newGameWriter(String imagePosition) throws IOException {
+    public static void newGameWriter(String imagePosition, String inputGameName) throws IOException {
         // Write the game data to the file
         BufferedWriter writer = new BufferedWriter(new FileWriter(DefaultPage.filePath, true));
-        writer.write(DefaultPage.dataList.size() + "=@#" + chosenFilePath + "=@#0=@#1=@#" + imagePosition + "\n");
+        writer.write(DefaultPage.dataList.size() + "=@#" + chosenFilePath + "=@#0=@#1=@#" + imagePosition + "=@#" + inputGameName + "\n");
         writer.close();
         DefaultPage.gameDataReader();
         Comparator<GameInfo> gameDataComparator = (o1, o2) -> Long.compare(o2.getPlayTime(), o1.getPlayTime());
         DefaultPage.dataList.sort(gameDataComparator);
         String gameName = chosenFilePath.substring(chosenFilePath.lastIndexOf("\\") + 1,
                 chosenFilePath.indexOf(".exe"));
-        DefaultPage.content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
-                "<td align='right'>" +
-                new Formatter().format("%.2f", Double.parseDouble("0"))
-                + " hours </td></tr></table></html>");
+        if (!inputGameName.equals("*-")) {
+            DefaultPage.content.add("<html><table width='250'><tr><td align='left'>" + inputGameName + "</td>" +
+                    "<td align='right'>" +
+                    new Formatter().format("%.2f", Double.parseDouble("0"))
+                    + " hours </td></tr></table></html>");
+        } else {
+            DefaultPage.content.add("<html><table width='250'><tr><td align='left'>" + gameName + "</td>" +
+                    "<td align='right'>" +
+                    new Formatter().format("%.2f", Double.parseDouble("0"))
+                    + " hours </td></tr></table></html>");
+        }
         DefaultPage.iconList.add(FileSystemView.getFileSystemView().getSystemIcon(new File(chosenFilePath)));
         DefaultPage.gameList.updateUI();
     }

@@ -5,4 +5,5 @@ public class ItemIndex {
     public static final int PLAY_TIME = 2;
     public static final int STATUS = 3;
     public static final int IMAGE_POSITION = 4;
+    public static final int GAME_NAME = 5;
 }
