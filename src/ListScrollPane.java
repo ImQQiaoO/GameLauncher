@@ -11,7 +11,6 @@ import java.util.Vector;
 public class ListScrollPane {
 
     static JScrollPane scrollPane;
-
     private final DefaultPage defaultPage;
 
     public ListScrollPane(DefaultPage defaultPage) {
@@ -92,7 +91,8 @@ public class ListScrollPane {
         DefaultPage.gameList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) { // 确保只在最后一次选择事件之后调用
                 DefaultPage.selectedIndex = DefaultPage.gameList.getSelectedIndex();
-                DefaultPage.buttonColor();
+                DefaultPage.buttonColor(DefaultPage.startButton);
+                DefaultPage.buttonColor(DefaultPage.modifyButton);
                 defaultPage.repaint();  // Update the game image
                 System.out.println(DefaultPage.dataList.get(DefaultPage.selectedIndex)); // 输出选中的选项
                 System.out.println(DefaultPage.selectedIndex);

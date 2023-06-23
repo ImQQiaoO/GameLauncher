@@ -17,6 +17,7 @@ public class DefaultPage extends JPanel {
     Process process;
     DefaultPage defaultPage;
     static JButton startButton;
+    static JButton modifyButton;
     static int selectedIndex = -1;
     static Vector<Object> content;
     static JList<Object> gameList;
@@ -73,6 +74,7 @@ public class DefaultPage extends JPanel {
 
 
         //buttons
+        // Add button
         JButton addButton = new JButton("+");
         this.add(addButton);
         addButton.setBackground(new Color(27, 80, 104));
@@ -88,9 +90,10 @@ public class DefaultPage extends JPanel {
             }
         });
 
+        // Start button
         startButton = new JButton("Start");
         this.add(startButton);
-        buttonColor();
+        buttonColor(startButton);
         startButton.setFocusPainted(false);
         startButton.setBounds(750, 230, 100, 50);
         startButton.addActionListener(e -> {    //Add start button function.
@@ -111,6 +114,26 @@ public class DefaultPage extends JPanel {
             }
         });
 
+        // Modify button
+        modifyButton = new JButton("Modify Info");
+        this.add(modifyButton);
+        buttonColor(modifyButton);
+        modifyButton.setFocusPainted(false);
+        modifyButton.setBounds(750, 290, 100, 50);
+        modifyButton.addActionListener(e -> {    //Add modify button function.
+            if (selectedIndex == -1) {
+                JOptionPane.showMessageDialog(null, "No game selected.", "Error"
+                        , JOptionPane.WARNING_MESSAGE);
+                return;
+            } else if (dataList.get(selectedIndex).getStatus() == '0') {
+                JOptionPane.showMessageDialog(null, "Game is not installed", "Error"
+                        , JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            ModifyPanel modifyPanel = new ModifyPanel();
+
+        });
+
         //game list
         ListScrollPane listScrollPane = new ListScrollPane(defaultPage);
         listScrollPane.showGameList();
@@ -118,17 +141,17 @@ public class DefaultPage extends JPanel {
         setLayout(null);
     }
 
-    public static void buttonColor() {
+    public static void buttonColor(JButton currentButton) {
         if (selectedIndex == -1) {
-            startButton.setBackground(new Color(75, 75, 75));
-            startButton.setForeground(Color.WHITE);
+            currentButton.setBackground(new Color(75, 75, 75));
+            currentButton.setForeground(Color.WHITE);
         } else {
             if (dataList.get(selectedIndex).getStatus() == '0') {
-                startButton.setBackground(new Color(75, 75, 75));
-                startButton.setForeground(Color.WHITE);
+                currentButton.setBackground(new Color(75, 75, 75));
+                currentButton.setForeground(Color.WHITE);
             } else {
-                startButton.setBackground(new Color(27, 80, 104));
-                startButton.setForeground(Color.WHITE);
+                currentButton.setBackground(new Color(27, 80, 104));
+                currentButton.setForeground(Color.WHITE);
             }
         }
     }
